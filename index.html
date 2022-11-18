@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Raspberry Pi Project</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <nav id="navbar">
+      <header>I ❤️ My Pi</header>
+      <ul>
+        <li>
+          <a class="nav-link" href="#Introduction">Introduction</a>
+        </li>
+        <li>
+          <a class="nav-link" href="#How_does_Pi-hole_work?">How does Pi-hole work?</a>
+        </li>
+        <li>
+          <a class="nav-link" href="#What_you'll_need">What you'll need</a>
+        </li>
+        <li>
+          <a class="nav-link" href="#Installing_Raspberry_Pi_OS_Lite">Installing Raspberry Pi OS Lite</a>
+        </li>
+        <li>
+          <a class="nav-link" href="#Starting_and_updating_your_Raspberry_Pi">Starting and updating your Raspberry Pi</a>
+        </li>
+        <li>
+          <a class="nav-link" href="#Creating_a_static_IP_address_for_your_Raspberry_Pi">Creating a static IP address for your Raspberry Pi</a>
+        </li>
+        <li>
+          <a class="nav-link" href="#Installing_Pi-hole">Installing Pi-hole</a>
+        </li>
+        <li>
+          <a class="nav-link" href="#Changing_your_router’s_default_DNS_server_to_Pi-hole">Changing your router’s default DNS server to Pi-hole</a>
+        </li>
+        <li>
+          <a class="nav-link" href="#Accessing_and_administering_Pi-hole">Accessing and administering Pi-hole</a>
+        </li>
+        <li>
+          <a class="nav-link" href="#Using_Pi-hole_as_a_DHCP_server">Using Pi-hole as a DHCP server</a>
+        </li>
+        <li>
+          <a class="nav-link" href="#Results">Results</a>
+        </li>
+        <li>
+          <a class="nav-link" href="#Other_ways_to_take_control_of_your_internet_experience">Other ways to take control of your internet experience</a>
+        </li>
+      </ul>
+    </nav>
+
+    <main id="main-doc">
+      <h1 class="project-title">Block ads on every device in your house with a Raspberry Pi and Pi-hole</h1>
+      <section class="main-section" id="Introduction">
+        <header>Introduction</header>
+        <article>
+          <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section1.jpg" alt="Introduction" width="608" height="405">
+          </figure>
+          <p>Advertising on the internet is a nuisance — getting in the way of your browsing, using your bandwidth, and lumbering you with trackers that send your data to people you might not want to have it. Installing ad blockers on each of your devices is time-consuming; and some of your devices, like smart TVs or other smart devices, won’t have a local ad-blocking option available.</p>
+          <p>Pi-hole gets around this problem by doing all the ad-and tracker-blocking at your router, so all the internet traffic coming into your house is filtered for advertising and tracking.</p>
+        </article>
+      </section>
+
+      <section class="main-section" id="How_does_Pi-hole_work?">
+        <header>How does Pi-hole work?</header>
+        <p>Pi-hole is what’s known as a DNS sinkhole. DNS (Domain Name System) is like an address book for the internet. We humans interact with the internet using domain names (raspberrypi.com, for example); but behind the scenes, your network looks up that domain name using a DNS address book and translates it into what’s called an Internet Protocol (IP) address – 93.93.128.86 in the case of raspberrypi.com. Try typing this IP address in your browser address bar to see for yourself.</p>
+        <p>Remembering something like 93.93.128.86 is far more difficult than remembering the human-readable URLs you’re used to, which is why DNS exists. Pi-hole gets into the middle of this process and filters the lookups so that if your device tries to show you an advert it can block it. Everything else is displayed as normal, but the ads will be missing.</p>
+        <p>During the installation of Pi-hole we will also cover the basics of assigning a static IP address to your Raspberry Pi from your router settings, creating a static IP address on your Raspberry Pi itself, replacing your network DNS with Pi-hole, and utilising your Pi-hole as a DHCP server. Your particular configuration will be tailored to your personal requirements; some of these will be determined by your particular needs, while others may be because of the type of hardware you have.</p>
+      </section>
+
+      <section class="main-section" id="What_you'll_need">
+        <header>What you'll need</header>
+        <h2 class="subHeading">Shopping list</h2>
+        <ul>
+          <li><a href="https://www.raspberrypi.com/products/raspberry-pi-4-model-b/" target="_blank">Raspberry Pi</a> (any model)</li>
+          <li><a href="https://www.raspberrypi.com/products/type-c-power-supply/" targer="_blank">USB-C power supply unit (PSU)</a></li>
+          <li>microSD card</li>
+        </ul>
+
+        <h4 class="subHeading">Choosing the right Raspberry Pi and accessories</h4>
+        <p>Pi-hole will work on any Raspberry Pi. For our tutorial, we’ll be using a <a href="https://www.raspberrypi.com/products/raspberry-pi-4-model-b/" target="_blank">Raspberry Pi 4</a>, and you will need a <a href="https://www.raspberrypi.com/products/type-c-power-supply/" target="_blank">USB-C</a> power supply. Older models will require a micro USB power supply. Because we are going to be running a headless setup, we won’t need extra peripherals.</p>
+        <p>Pi-hole will be left powered on for long periods of time, so it’s important to have a good quality power supply for your Raspberry Pi. We recommend the official USB-C and micro USB power supplies, as they are designed to provide a consistent +5.1V with captive (attached) USB cables. Don’t be tempted to use any old spare phone charger and cable you may have lying around, as they may not provide sufficient or reliable power.</p>
+
+        <h4 class="subHeading">For the initial setup, you’ll also need:</h4>
+        <p>Another computer connected to your network. We’ll refer to this as “your usual computer”, to distinguish it from the Raspberry Pi computer that you are setting up for Pi-hole. We’re going to be accessing and controlling the Raspberry Pi via Wi-Fi from this computer, so there is no need for an additional keyboard, mouse, and display to be attached to your Raspberry Pi.</p>
+      </section>
+
+      <section class="main-section" id="Installing_Raspberry_Pi_OS_Lite">
+        <header>Installing Raspberry Pi OS Lite</header>
+        <p>We’re going to use Raspberry Pi Imager to install Raspberry Pi OS Lite onto your microSD card. Raspberry Pi Imager is available for free for Windows, macOS, Ubuntu for x86, and Raspberry Pi OS. Download it to your usual computer <a href="https://www.raspberrypi.com/software/" target="_blank">here</a>.</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section4-img1.png" alt="Installing Raspberry Pi OS Lite" width="608" height="428">
+          <figcaption>Raspberry Pi Imager running under macOS</figcaption>
+        </figure>
+        <p>Connect your microSD card to your usual computer using an SD card adapter if you need one. We recommend a minimum storage size of 16GB. Open Raspberry Pi Imager, click <b>CHOOSE OS</b>, and select <b>Raspberry Pi OS Lite (32-bit)</b>, which is the smaller-sized Raspberry Pi OS without a desktop environment or any additional applications — we won’t need them for this project. It can be found under <b>Raspberry Pi OS (other)</b>:</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section4-img2.png" alt="Installing Raspberry Pi OS Lite" width="608" height="380">
+        </figure>
+        <p><b>CHOOSE STORAGE</b>: Select your microSD card.</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section4-img3.png" alt="Installing Raspberry Pi OS Lite"  width="608" height="380">
+        </figure>
+        <p>
+          Press Ctrl-Shift-X to bring up the Raspberry Pi Imager advanced menu, or click the advanced menu cogwheel button in the bottom right corner:
+        </p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section4-img4.png" alt="Installing Raspberry Pi OS Lite"  width="608" height="380">
+        </figure>
+        <p>Set a hostname of your choice; we’re using the hostname pihole for this tutorial. Check the <b>Enable SSH</b> (Secure Shell) box and set a username and password. You’ll need these details to access your Raspberry Pi later, so be sure to make a secure note of them. Configure your wireless LAN by checking the box, and replace XXXXXXX with your own SSID (network name) and password.</p>
+        <p>Click <b>SAVE</b> to close the advanced menu, and finally select <b>WRITE</b> to start the process of writing the operating system to the SD card, which will take a few minutes to complete.</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section4-img5.png" alt="Installing Raspberry Pi OS Lite"  width="608" height="380">
+        </figure>
+      </section>
+
+      <section class="main-section" id="Starting_and_updating_your_Raspberry_Pi">
+        <header>Starting and updating your Raspberry Pi</header>
+        <p>Insert your microSD card into your Raspberry Pi and connect to the mains power via a USB-C power supply unit. Your Raspberry Pi will now boot for the first time and will connect to your Wi-Fi network automatically, as we have already given it all the credentials it needs.</p>
+        <h4 class="subHeading">Connect to your Raspberry Pi via SSH</h4>
+        <p>Open a terminal session on your usual computer and run the following to access your Raspberry Pi via SSH, replacing “pi” and “pihole” with the username and hostname you chose:</p>
+        <code>$ ssh pi@pihole.local</code>
+        <p>The fist time you do this, confirm that you want to connect. When asked, use the password you created in Raspberry Pi Imager:</p>
+        <code>$ ssh pi@pihole.local
+The authenticity of host 'pihole.local (2a00:23c8:3880:d801:34e0:2052:bc72:dd67)' can't be established.
+ED25519 key fingerprint is SHA256:NjLggsBZzj6N99rABupQCwyhjNnGpeMT6T9jaoRShu8.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'pihole.local' (ED25519) to the list of known hosts.
+pi@pihole.local's password:
+Linux pihole 5.15.32-v7l+ #1538 SMP Thu Mar 31 19:39:41 BST 2022 armv7l
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Mon Jun 13 12:17:17 2022 from 2a00:23c8:3880:d801:1c21:ea44:bec7:5113
+pi@pihole:~ $</code>
+        <p>It’s best practice to run an update task for a fresh installation of Raspberry Pi OS, and it’s something that you should do regularly. You want to ensure the device is running with the very latest versions of all programs and security. Run the following two commands, typing y and hitting Enter when prompted to continue:</p>
+        <code>$ sudo apt update
+$ sudo apt full-upgrade</code>
+        <p>Reboot your device to allow any changes to take effect:</p>
+        <code>$ sudo reboot</code>
+        <p>Now that your Raspberry Pi is fully updated and ready to go, log back in before moving on.</p>
+      </section>
+
+      <section class="main-section" id="Creating_a_static_IP_address_for_your_Raspberry_Pi">
+        <header>Creating a static IP address for your Raspberry Pi</header>
+        <h4 class="subHeading">What is a static IP address?</h4>
+        <p>This step is important for your Pi-hole to work correctly. Every time your Raspberry Pi (or any other network attached device) is powered on, it is given a local IP address which is used by other devices on your network to communicate. Normally, this is carried out automatically by your router, using what’s known as Dynamic Host Configuration Protocol (DHCP). With DHCP, when devices connect to a network, IP addresses and proper configuration parameters are assigned. Then, as they leave the network and their IP lease (the time the server allows a device to hold a particular IP address) expires, their information is returned to the local DHCP server database — also known as a pool — to be reassigned to other devices when required. One of the primary reasons this system is used is so that no two devices can have the same IP address, preventing any potential network conflict issues.</p>
+        <p>But what happens when you need to know the IP address of a device on your network over long periods of time — in the case of a printer, for example? You don’t want to have to look up the address manually every time it gets turned on. This is when assigning a static IP address for a specific device, also known as DHCP reservation, becomes useful. This situation applies to a Pi-hole setup: other devices on your network will be communicating with it to use it as their DNS service in order to block out ads, so they need to know its IP address consistently. We need to follow some steps for your Raspberry Pi to maintain a static IP address at all times.</p>
+        <h4 class="subHeading">Finding out IP and MAC addresses</h4>
+        <p>It will help to start by knowing some information about your Raspberry Pi and network. Run the following command:</p>
+        <code>$ ifconfig</code>
+        <p>The response will look similar to this:</p>
+        <code>pi@pihole:~ $ ifconfig
+eth0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        ether dc:a6:32:4d:48:be  txqueuelen 1000  (Ethernet)
+        RX packets 537  bytes 155055 (151.4 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 277  bytes 51979 (50.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 21  bytes 2373 (2.3 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 21  bytes 2373 (2.3 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+wlan0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.230  netmask 255.255.255.0  broadcast 192.168.1.255
+        inet6 2a00:1098:3142:15:8cbf:eb09:53f8:9515  prefixlen 64  scopeid 0x0<global>
+        inet6 fe80::3f31:d508:1beb:6bc4  prefixlen 64  scopeid 0x20<link>
+        ether dc:a6:32:4d:48:bf  txqueuelen 1000  (Ethernet)
+        RX packets 17297  bytes 15167355 (14.4 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 3845  bytes 356504 (348.1 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+pi@pihole:~ $</code>
+        <p>What we’re looking for here is in the wlan0 section, which is information about your Raspberry Pi’s on-board Wi-Fi connection. In this case, 192.168.1.230 is the Raspberry Pi’s IP address; your address will be different. You’ll also need to know the Media Access Control (MAC) address, which is a unique identifier assigned to a device (dc:a6:32:4d:48:bf in the case of this Raspberry Pi – again, yours will be different). Make a note of these, as you’ll need them later.</p>
+        <p>We also need the IP address of your router. The easiest way is to look for a sticker on the back of it. Otherwise, different devices will have different ways of identifying the address. Windows computers will call it the “default gateway”, while iOS devices will store your router’s IP address simply under “router.”</p>
+        <h4 class="subHeading">Assigning a static IP address to your Raspberry Pi</h4>
+        <p>The simplest way to give your Pi-hole a static IP address is by changing some of your router settings. This process will vary slightly depending of the type of hardware you have.</p>
+        <p>On your usual computer, open your web browser. Type in the IP address of the router, enter the username and password (if you’ve never changed these, they’re probably printed on a sticker on your router or included in the information that came with it), and then click OK or Log In. You will have to navigate through your router’s menu system to find what you need, but it’s likely to be in the Advanced Menu options. You are looking for an address table showing all of the devices attached to your network, which will be listed by either hostname, IP address, or MAC address. Look for the option to confirm “Always use this IP address” for your Raspberry Pi. Confirm the static IP address for your Raspberry Pi and save your settings.</p>
+        <p>If there isn’t any option to set a static IP address, don’t lose hope, and keep reading — alternative options are available during the Pi-hole installation process.</p>
+      </section>
+
+      <section class="main-section" id="Installing_Pi-hole">
+        <header>Installing Pi-hole</header>
+        <p>This part is straightforward: there is a single-line command to take you through the setup process. Back in your SSH terminal session to your Raspberry Pi, run the following command:</p>
+        <code>$ curl -sSL https://install.pi-hole.net | bash</code>
+        <code>pi@pihole:~ $ curl -sSL https://install.pi-hole.net | bash
+
+  [i] Root user check
+  [i] Script called with non-root privileges
+      The Pi-hole requires elevated privileges to install and run
+      Please check the installer for any concerns regarding this requirement
+      Make sure to download this script from a trusted source
+
+  [✓] Sudo utility check
+
+  [✓] Root user check
+
+        .;;,.
+        .ccccc:,.
+         :cccclll:.      ..,,
+          :ccccclll.   ;ooodc
+           'ccll:;ll .oooodc
+             .;cll.;;looo:.
+                 .. ','.
+                .',,,,,,'.
+              .',,,,,,,,,,.
+            .',,,,,,,,,,,,....
+          ....''',,,,,,,'.......
+        .........  ....  .........
+        ..........      ..........
+        ..........      ..........
+        .........  ....  .........
+          ........,,,,,,,'......
+            ....',,,,,,,,,,,,.
+               .',,,,,,,,,'.
+                .',,,,,,'.
+                  ..'''.</code>
+        <p>Wait for the installer to start:</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section7-img1.png" alt="Installing Pi-hole" width="608" height="380">
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section7-img2.png" alt="Installing Pi-hole" width="608" height="380">
+        </figure>
+        <p>You’ll be reminded that your Raspberry Pi needs a static IP address. Selecting “No” when asked if you have understood this will exit out of the setup; again, options will be available later if you were not able to create a static IP by changing your router’s settings in a web browser as we described above, so don’t worry, accept the message by clicking “Yes”, and continue. Next, we’ll select wlan0 as our interface, as we will be using Pi-hole over Wi-Fi for this guide.</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section7-img3.png" alt="Installing Pi-hole" width="608" height="380">
+        </figure>
+        <h4 class="subHeading">Setting up a static IP address, if you weren’t able to do this earlier</h4>
+        <p>If you were able to set up a static IP address using your router settings, you can select Skip for this the next step. But if you weren’t able to do this, you are now given the option to create a static address directly on your Raspberry Pi itself rather than in your router settings:</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section7-img4.png" alt="Installing Pi-hole" width="608" height="380">
+        </figure>
+        <p>While this option is available here, it’s not a recommended course of action to take on its own, as there is the possibility that your router will try to assign this address to another device, causing a network conflict. So, if you set a static IP address here, you should also amend the DHCP reservation pool on your router so that it doesn’t include the IP address of your Raspberry Pi, in order to avoid a conflict.</p>
+        <p>If you are unable to assign a static IP in your router settings or to amend the DHCP pool for your router, then disable DNS and DHCP altogether on the router, and create a static IP on your Raspberry Pi at this stage instead. You should then set up your Pi-hole to handle all DHCP services as well as DNS. You will be able to configure DHCP using the Pi-hole administration webpage once the installation process is complete.</p>
+        <h4 class="subHeading">Choosing an upstream DNS provider and a list of unwanted ads and sites</h4>
+        <p>Next, we choose our upstream DNS provider. Once we’ve blocked ads and sites we don’t want, we still need to get to that full address book in order to display the webpage or information we actually do want to see. It’s your choice here; Google is the first option.</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section7-img5.png" alt="Installing Pi-hole" width="608" height="380">
+        </figure>
+        <p>The default list of for all the ads and sites we don’t want to see is a good place to start. You can change it later:</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section7-img6.png" alt="Installing Pi-hole" width="608" height="380">
+        </figure>
+        <p>Install the admin interface and complete the remainder of the installation with the recommended settings, including the web server and log queries.</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section7-img7.png" alt="Installing Pi-hole" width="608" height="380">
+        </figure>
+      </section>
+
+      <section class="main-section" id="Changing_your_router’s_default_DNS_server_to_Pi-hole">  
+        <header>Changing your router’s default DNS server to Pi-hole</header>
+        <p>You now need to change the default DNS server address in your router settings to the newly fixed IP address for Pi-hole, so that it can take over the DNS process for all of your network devices. Navigate to the router settings to change the DNS server address, and remove any secondary addresses. Save, and reboot your router for the settings to take effect.</p>
+        <p>If you want device-specific, rather than network-wide, protection then you can leave your router’s DNS setting alone and change individual devices’ DNS server details to the Pi-hole IP address, directly on the device in question. Again, though, the way to do this will be specific to the piece of hardware you have.</p>
+        <p>Some routers will not allow you to create static IP addresses or let you change the DNS details at all. If this is the case with you, there will be other options available to you during the installation process.
+</p>
+      </section>
+
+      <section class="main-section" id="Accessing_and_administering_Pi-hole">
+        <header>Accessing and administering Pi-hole</header>
+        <p>When installation is complete, you are given Admin Webpage login and password information; make a note of this. You can change your admin password with the following command:</p>
+        <code>$ sudo pihole -a -p</code>
+        <p>Type the full address provided, http://[IPaddress]/admin, into a web browser on any connected Wi-Fi device to gain access:</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section9-img1.png" alt="Accessing and administering Pi-hole" width="608" height="380">
+        </figure>
+        <p>Here you’ll find a whole host of statistics and information about what Pi-hole is doing, including the number, type, and frequency of blocks it has performed. (Check in frequently, if only because it’s fascinating — we’re always amazed at the amount of work our Pi-hole has to do.)</p>
+        <p>A feature you may wish to make use of is restricting access to a particular domain. If you wish to block access to certain sites over your network, clicking on Blacklist allows you add specific websites or make more generalised restrictions utilising the built-in Regular Expression filter:</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section9-img2.png" alt="Accessing and administering Pi-hole" width="608" height="380">
+        </figure>
+      </section>
+
+      <section class="main-section" id="Using_Pi-hole_as_a_DHCP_server">
+        <header>Using Pi-hole as a DHCP server</header>
+        <p>As previously mentioned, assigning a static IP address to your Pi-hole may not be possible in your router settings. Disabling the DHCP service on your router and enabling Pi-hole to act as your network DHCP server is the solution to this, and you can configure it through settings in your Pi-hole admin page:</p>
+        <figure>
+          <img src="https://kepee98.github.io/hosted-assets/raspberrypi-project/section10.png" alt="Using Pi-hole as a DHCP server" width="608" height="380">
+        </figure>
+        <p>Navigate to Pi-hole Settings, and select the DHCP tab. Check the box to enable the DHCP server, add in the IP address of your router, and give a range of IP addresses available to Pi-hole to allocate to devices as they connect to the network. You’ll also see a flashing notice to remind you to disable the DHCP server on your router. Scroll down and click Save before moving on.</p>
+      </section>
+
+      <section class="main-section" id="Results">
+        <header>Results</header>
+        <p>Pi-hole can make a big difference to your overall internet experience, reducing the number of banners, pop-ups, videos, and other types of advertising you are compelled to see. How effective it is depends on the websites you visit and the blacklist you use. There are a number of sites dedicated to testing the effectiveness of ad-blockers: <a href="https://adblock-tester.com/" target="_blank">Adblock Tester</a>, for example, scored 57 out of 100 with Pi-hole running, and only 27 out of 100 without it (MacOS and Safari browser).</p>
+      </section>
+
+      <section class="main-section" id="Other_ways_to_take_control_of_your_internet_experience">
+        <header>Other ways to take control of your internet experience</header>
+        <p>If internet privacy is important to you, then you may wish to explore other projects using Raspberry Pi, such as installing your own VPN (Virtual Private Network). A VPN service provides you with an encrypted server and hides your IP address from corporations, government agencies, and would-be hackers. It also keeps the content of your internet activity private, even if you are using public or shared Wi-Fi.</p>
+        <ul>
+          <li>To improve your general security you could also try <a href="https://www.raspberrypi.com/products/raspberry-pi-4-model-b/" target="_blank">Setting up two-factor authentication on your Raspberry Pi</a>.</li>
+          <li>Enjoy using the internet without ads. It can be surprisingly refreshing.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
